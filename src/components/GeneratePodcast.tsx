@@ -1,4 +1,5 @@
 import React, { Dispatch, FC, SetStateAction, useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 import { Id } from "@/../convex/_generated/dataModel";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,6 +24,9 @@ interface IProps {
 // Custom Hook to handle the logic
 const useGeneratePodcast = (args: IProps) => {
   // -------------------------------------------------------------------------
+  // To display messages
+  const { toast } = useToast();
+  // -------------------------------------------------------------------------
   const [isGenerating, setIsGenerating] = useState(false);
   // -------------------------------------------------------------------------
   // Get the OpenAI Action from the Convex API
@@ -44,7 +48,10 @@ const useGeneratePodcast = (args: IProps) => {
     // -------------------------------------------------------------------------
     // If no prompt, return
     if (!args.voicePrompt) {
-      // Todo: Show error message
+      toast({
+        title: "Please select a Voice Type to generate audio",
+        variant: "warning",
+      });
       setIsGenerating(false);
       return;
     }
@@ -70,15 +77,23 @@ const useGeneratePodcast = (args: IProps) => {
       // Get the uploaded file's url from Convex storage using our custom mutation
       const audioUrl = await getAudioUrl({ storageId });
 
+      // -----------------------------------------------------------------------
+      // Update parent form's state
       args.setAudioStorageId(storageId);
       args.setAudio(audioUrl!);
 
-      // Todo: Show success message
+      // -----------------------------------------------------------------------
+      toast({
+        title: "Podcast generated successfully",
+      });
       setIsGenerating(false);
       // -----------------------------------------------------------------------
     } catch (error) {
       // -----------------------------------------------------------------------
-      // Todo: Show error message
+      toast({
+        title: "Error occurred while generating podcast",
+        variant: "destructive",
+      });
       console.error("Error occurred while generating podcast: ", error);
       // -----------------------------------------------------------------------
       setIsGenerating(false);
@@ -123,6 +138,7 @@ const GeneratePodcast: FC<IProps> = (props) => {
         <Button
           type="submit"
           className="text-16 font-bold bg-orange-1 text-white-1 py-4 transition-all duration-500 hover:bg-orange-900"
+          onClick={generatePodcast}
         >
           {isGenerating ? (
             <>
