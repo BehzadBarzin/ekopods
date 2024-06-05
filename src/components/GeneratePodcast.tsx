@@ -4,9 +4,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAction } from "convex/react";
+import { useAction, useMutation } from "convex/react";
 import { api } from "@/../convex/_generated/api";
 import { v4 as uuidv4 } from "uuid";
+import { useUploadFiles } from "@xixixao/uploadstuff/react";
 
 interface IProps {
   voiceType: string;
@@ -24,7 +25,15 @@ const useGeneratePodcast = (args: IProps) => {
   // -------------------------------------------------------------------------
   const [isGenerating, setIsGenerating] = useState(false);
   // -------------------------------------------------------------------------
+  // Get the OpenAI Action from the Convex API
   const getPodcastAudio = useAction(api.openai.generateAudioAction);
+  // -------------------------------------------------------------------------
+  // Integrate Convex mutation and UploadStuff
+  const generateUploadUrl = useMutation(api.files.generateUploadUrl);
+  const { startUpload } = useUploadFiles(generateUploadUrl);
+  // -------------------------------------------------------------------------
+  // Get the Convex mutation that returns the uploaded file's url by its id from storage
+  const getAudioUrl = useMutation(api.podcasts.getUrl);
   // -------------------------------------------------------------------------
 
   const generatePodcast = async () => {
@@ -53,6 +62,19 @@ const useGeneratePodcast = (args: IProps) => {
       // Convert the Blob to a File object
       const file = new File([blob], fileName, { type: "audio/mpeg" });
 
+      // Start the file upload to Convex
+      const uploaded = await startUpload([file]);
+      // Get the storage id of the file from upload response
+      const storageId = (uploaded[0].response as any).storageId;
+
+      // Get the uploaded file's url from Convex storage using our custom mutation
+      const audioUrl = await getAudioUrl({ storageId });
+
+      args.setAudioStorageId(storageId);
+      args.setAudio(audioUrl!);
+
+      // Todo: Show success message
+      setIsGenerating(false);
       // -----------------------------------------------------------------------
     } catch (error) {
       // -----------------------------------------------------------------------
