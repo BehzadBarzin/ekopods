@@ -4,6 +4,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAction } from "convex/react";
+import { api } from "@/../convex/_generated/api";
+import { v4 as uuidv4 } from "uuid";
 
 interface IProps {
   voiceType: string;
@@ -18,11 +21,53 @@ interface IProps {
 // =============================================================================
 // Custom Hook to handle the logic
 const useGeneratePodcast = (args: IProps) => {
-  // Todo: Implement this
+  // -------------------------------------------------------------------------
+  const [isGenerating, setIsGenerating] = useState(false);
+  // -------------------------------------------------------------------------
+  const getPodcastAudio = useAction(api.openai.generateAudioAction);
+  // -------------------------------------------------------------------------
+
+  const generatePodcast = async () => {
+    setIsGenerating(true);
+    // -------------------------------------------------------------------------
+    // Rest previous generated audio
+    args.setAudio("");
+    // -------------------------------------------------------------------------
+    // If no prompt, return
+    if (!args.voicePrompt) {
+      // Todo: Show error message
+      setIsGenerating(false);
+      return;
+    }
+    // -------------------------------------------------------------------------
+    try {
+      // -----------------------------------------------------------------------
+      const response = await getPodcastAudio({
+        voice: args.voiceType,
+        input: args.voicePrompt,
+      });
+      // Convert the audio to a Blob
+      const blob = new Blob([response], { type: "audio/mpeg" });
+      // Generate a random file name
+      const fileName = `podcast-${uuidv4()}.mp3`;
+      // Convert the Blob to a File object
+      const file = new File([blob], fileName, { type: "audio/mpeg" });
+
+      // -----------------------------------------------------------------------
+    } catch (error) {
+      // -----------------------------------------------------------------------
+      // Todo: Show error message
+      console.error("Error occurred while generating podcast: ", error);
+      // -----------------------------------------------------------------------
+      setIsGenerating(false);
+      return;
+    }
+    // -------------------------------------------------------------------------
+  };
 
   return {
-    isGenerating: false,
-    generatePodcast: () => {},
+    isGenerating,
+    generatePodcast,
   };
 };
 
