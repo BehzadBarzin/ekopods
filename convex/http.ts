@@ -42,28 +42,45 @@ const handleClerkWebhook = httpAction(async (ctx, request) => {
     // -------------------------------------------------------------------------
     // When a user is updated
     case "user.updated":
-      // TODO: update user
+      // Update user in convex database
+      await ctx.runMutation(internal.users.updateUser, {
+        clerkId: event.data.id,
+        imageUrl: event.data.image_url,
+        email: event.data.email_addresses[0].email_address,
+      });
       break;
     // -------------------------------------------------------------------------
     // When a user is deleted
     case "user.deleted":
-      // TODO: delete user
+      // Delete user from convex database
+      await ctx.runMutation(internal.users.deleteUser, {
+        clerkId: event.data.id as string,
+      });
       break;
     // -------------------------------------------------------------------------
   }
+  // Return success response back to Clerk
+  // Remember this webhook is being triggered by Clerk
   return new Response(null, {
     status: 200,
   });
 });
 
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// Create a new Convex HTTP router
 const http = httpRouter();
 
+// Register the webhook route for Clerk callback
 http.route({
   path: "/clerk",
   method: "POST",
   handler: handleClerkWebhook,
 });
 
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// Helper function to validate the request to make sure it's coming from Clerk
 const validateRequest = async (
   req: Request
 ): Promise<WebhookEvent | undefined> => {
@@ -83,4 +100,10 @@ const validateRequest = async (
   return event as unknown as WebhookEvent;
 };
 
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+// Export the HTTP router
 export default http;
+
+// -----------------------------------------------------------------------------
