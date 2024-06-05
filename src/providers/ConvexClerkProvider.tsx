@@ -30,8 +30,9 @@ const ConvexClerkProvider: FC<IProps> = ({ children }) => (
     publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY as string}
     appearance={{
       layout: {
-        socialButtonsVariant: "iconButton",
-        logoImageUrl: "/icons/auth-logo.svg",
+        socialButtonsVariant: "auto",
+        logoImageUrl: "/icons/logo-auth.png",
+        shimmer: true,
       },
       variables: {
         colorBackground: "#15171c",
