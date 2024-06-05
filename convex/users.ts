@@ -1,6 +1,8 @@
 import { v } from "convex/values";
 import { internalMutation } from "./_generated/server";
 
+// -----------------------------------------------------------------------------
+// A function to create user in database
 export const createUser = internalMutation({
   // Arguments accepted by createUser function
   args: {
@@ -20,3 +22,5 @@ export const createUser = internalMutation({
     });
   },
 });
+
+// -----------------------------------------------------------------------------

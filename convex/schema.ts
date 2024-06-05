@@ -1,7 +1,11 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
+// -----------------------------------------------------------------------------
+// Define the Convex database schema
 export default defineSchema({
+  // ---------------------------------------------------------------------------
+  // 'podcasts' table:
   podcasts: defineTable({
     user: v.id("users"),
     podcastTitle: v.string(),
@@ -19,9 +23,12 @@ export default defineSchema({
     audioDuration: v.number(),
     views: v.number(),
   })
+    // Define search indexes: (https://docs.convex.dev/text-search)
     .searchIndex("search_author", { searchField: "author" })
     .searchIndex("search_title", { searchField: "podcastTitle" })
     .searchIndex("search_body", { searchField: "podcastDescription" }),
+  // ---------------------------------------------------------------------------
+  // 'users' table:
   users: defineTable({
     email: v.string(),
     imageUrl: v.string(),
@@ -29,3 +36,5 @@ export default defineSchema({
     name: v.string(),
   }),
 });
+
+// -----------------------------------------------------------------------------
