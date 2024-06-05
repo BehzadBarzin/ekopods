@@ -1,0 +1,1 @@
+npm config rm proxy && npm config get proxy
