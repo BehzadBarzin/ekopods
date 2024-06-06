@@ -30,7 +30,7 @@ const useGeneratePodcast = (args: IProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   // -------------------------------------------------------------------------
   // Get the OpenAI Action from the Convex API
-  const getPodcastAudio = useAction(api.openai.generateAudioAction);
+  const getPodcastAudio = useAction(api.ai.generateAudioAction);
   // -------------------------------------------------------------------------
   // Integrate Convex mutation and UploadStuff
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);

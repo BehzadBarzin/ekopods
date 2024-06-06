@@ -43,7 +43,7 @@ const GenerateThumbnail: FC<IProps> = (props) => {
   const getImageUrl = useMutation(api.podcasts.getUrl);
   // ---------------------------------------------------------------------------
   // Get the OpenAI Action from the Convex API
-  const handleGenerateThumbnail = useAction(api.openai.generateThumbnailAction);
+  const handleGenerateThumbnail = useAction(api.ai.generateThumbnailAction);
   // ---------------------------------------------------------------------------
   // ---------------------------------------------------------------------------
   // Custom function to handle image upload to Convex storage
@@ -93,7 +93,7 @@ const GenerateThumbnail: FC<IProps> = (props) => {
       });
       // -----------------------------------------------------------------------
       // Retrieve the image from the response of the Convex Action
-      const blob = new Blob([response], { type: "image/png" });
+      const blob = new Blob([response], { type: "image/jpeg" });
       // -----------------------------------------------------------------------
       // Pass the Convex storage logic to our custom function
       handleImage(blob, `thumbnail-${uuidv4()}`);
