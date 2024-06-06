@@ -3,7 +3,9 @@ import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
 // -----------------------------------------------------------------------------
-// This mutation returns the uploaded audio file's url from the Convex storage
+// Mutations:
+// -----------------------------------------------------------------------------
+// Mutation: returns the uploaded audio file's url from the Convex storage
 export const getUrl = mutation({
   // Accepted arguments
   args: {
@@ -17,7 +19,7 @@ export const getUrl = mutation({
 });
 
 // -----------------------------------------------------------------------------
-// Create podcast mutation
+// Mutation: Create podcast
 export const createPodcast = mutation({
   // Accepted arguments for the mutation
   args: {
@@ -72,6 +74,19 @@ export const createPodcast = mutation({
       authorImageUrl: user[0].imageUrl,
       audioDuration: args.audioDuration,
     });
+  },
+});
+
+// -----------------------------------------------------------------------------
+// Queries:
+// -----------------------------------------------------------------------------
+// Query: will get the podcasts based on their view count
+export const getTrendingPodcasts = query({
+  handler: async (ctx) => {
+    // Get the podcast from the database
+    const podcast = await ctx.db.query("podcasts").collect();
+    // Sort the podcast by view count and return the top 8
+    return podcast.sort((a, b) => b.views - a.views).slice(0, 8);
   },
 });
 

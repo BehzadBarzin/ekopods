@@ -2,7 +2,7 @@ import Image from "next/image";
 import React, { FC } from "react";
 
 interface IProps {
-  podcastId: number;
+  podcastId: string;
   imgUrl: string;
   title: string;
   description: string;
