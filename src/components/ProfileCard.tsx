@@ -125,7 +125,7 @@ const ProfileCard: FC<IProps> = ({ podcastData, imageUrl, userFirstName }) => {
         {podcastData?.podcasts.length > 0 && (
           <Button
             onClick={playRandomPodcast}
-            className="text-16 bg-orange-1 font-extrabold text-white-1"
+            className="text-16 bg-orange-1 font-extrabold text-white-1 hover:bg-orange-900"
           >
             <Image
               src="/icons/Play.svg"

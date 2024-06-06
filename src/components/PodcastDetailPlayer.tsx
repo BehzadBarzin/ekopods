@@ -131,7 +131,7 @@ const PodcastDetailPlayer: FC<IProps> = ({
           {/* Play Button */}
           <Button
             onClick={handlePlay}
-            className="text-16 w-full max-w-[250px] bg-orange-1 font-extrabold text-white-1"
+            className="text-16 w-full max-w-[250px] bg-orange-1 font-extrabold text-white-1 hover:bg-orange-900"
           >
             <Image
               src="/icons/Play.svg"
