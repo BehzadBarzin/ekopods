@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React, { FC } from "react";
 
 interface IProps {
@@ -9,8 +10,20 @@ interface IProps {
 }
 
 const PodcastCard: FC<IProps> = ({ podcastId, imgUrl, title, description }) => {
+  // ---------------------------------------------------------------------------
+  const router = useRouter();
+  // ---------------------------------------------------------------------------
+
+  const handleViews = () => {
+    // Increase view
+
+    router.push(`/podcasts/${podcastId}`, {
+      scroll: true, // Scroll to the top of the page
+    });
+  };
+  // ---------------------------------------------------------------------------
   return (
-    <div className="cursor-pointer ">
+    <div className="cursor-pointer " onClick={handleViews}>
       <figure className="flex flex-col gap-2">
         <Image
           src={imgUrl}
