@@ -8,6 +8,7 @@ import PodcastDetailPlayer from "@/components/PodcastDetailPlayer";
 import LoaderSpinner from "@/components/LoaderSpinner";
 import PodcastCard from "@/components/PodcastCard";
 import EmptyState from "@/components/EmptyState";
+import { useUser } from "@clerk/nextjs";
 
 interface IProps {
   params: {
@@ -25,10 +26,17 @@ const PodcastDetails: FC<IProps> = ({ params }) => {
     podcastId: params.podcastId as Id<"podcasts">,
   });
   // ---------------------------------------------------------------------------
+  // Get the current user from Clerk
+  const { user } = useUser();
+  // Is the current user the author of the podcast
+  const isOwner = user?.id === podcast?.authorId;
+  // ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   // If there is no podcast, or similar podcasts, it means that we're loading
   if (!podcast || !similarPodcasts) {
     return <LoaderSpinner />;
   }
+  // ---------------------------------------------------------------------------
   // ---------------------------------------------------------------------------
   return (
     <section className="flex w-full flex-col">
@@ -50,7 +58,18 @@ const PodcastDetails: FC<IProps> = ({ params }) => {
       </figure>
       {/* ------------------------------------------------------------------ */}
       {/* Detail Player */}
-      <PodcastDetailPlayer />
+      <PodcastDetailPlayer
+        isOwner={isOwner}
+        podcastId={podcast._id}
+        audioUrl={podcast.audioUrl!}
+        podcastTitle={podcast.podcastTitle}
+        author={podcast.author}
+        imageUrl={podcast.imageUrl!}
+        imageStorageId={podcast.imageStorageId!}
+        audioStorageId={podcast.audioStorageId!}
+        authorImageUrl={podcast.authorImageUrl}
+        authorId={podcast.authorId}
+      />
       {/* ------------------------------------------------------------------ */}
       {/* Description */}
       <p className="text-16 text-white-2 pb-8 pt-[45px] font-medium md:text-center">

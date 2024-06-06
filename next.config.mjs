@@ -10,6 +10,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "giant-crab-892.convex.cloud",
       },
+      {
+        protocol: "https",
+        hostname: "img.clerk.com",
+      },
     ],
   },
 };
