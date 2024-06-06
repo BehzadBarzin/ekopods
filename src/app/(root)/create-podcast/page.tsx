@@ -34,6 +34,7 @@ import { Id } from "@/../convex/_generated/dataModel";
 import { useMutation } from "convex/react";
 import { api } from "@/../convex/_generated/api";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
 
 // -----------------------------------------------------------------------------
 
@@ -49,6 +50,9 @@ const formSchema = z.object({
 // -----------------------------------------------------------------------------
 
 const CreatePodcast = () => {
+  // ---------------------------------------------------------------------------
+  // To display messages
+  const { toast } = useToast();
   // ---------------------------------------------------------------------------
   const router = useRouter();
   // ---------------------------------------------------------------------------
@@ -73,7 +77,8 @@ const CreatePodcast = () => {
   );
   const [imageUrl, setImageUrl] = useState("");
   // ---------------------------------------------------------------------------
-  // const createPodcast = useMutation(api.podcasts.createPodcast);
+  // Get the createPodcast Convex mutation
+  const createPodcast = useMutation(api.podcasts.createPodcast);
   // ---------------------------------------------------------------------------
   // const { toast } = useToast()
   // ---------------------------------------------------------------------------
@@ -90,41 +95,53 @@ const CreatePodcast = () => {
   // ---------------------------------------------------------------------------
   // 2. Define a submit handler
   async function onSubmit(data: z.infer<typeof formSchema>) {
+    // -----------------------------------------------------------------------
     console.log(data);
-    // try {
-    //   setIsSubmitting(true);
-    //   if(!audioUrl || !imageUrl || !voiceType) {
-    //     toast({
-    //       title: 'Please generate audio and image',
-    //     })
-    //     setIsSubmitting(false);
-    //     throw new Error('Please generate audio and image')
-    //   }
-
-    //   const podcast = await createPodcast({
-    //     podcastTitle: data.podcastTitle,
-    //     podcastDescription: data.podcastDescription,
-    //     audioUrl,
-    //     imageUrl,
-    //     voiceType,
-    //     imagePrompt,
-    //     voicePrompt,
-    //     views: 0,
-    //     audioDuration,
-    //     audioStorageId: audioStorageId!,
-    //     imageStorageId: imageStorageId!,
-    //   })
-    //   toast({ title: 'Podcast created' })
-    //   setIsSubmitting(false);
-    //   router.push('/')
-    // } catch (error) {
-    //   console.log(error);
-    //   toast({
-    //     title: 'Error',
-    //     variant: 'destructive',
-    //   })
-    //   setIsSubmitting(false);
-    // }
+    // -----------------------------------------------------------------------
+    try {
+      // -----------------------------------------------------------------------
+      setIsSubmitting(true);
+      // -----------------------------------------------------------------------
+      // If any of the fields are empty, throw an error
+      if (!audioUrl || !imageUrl || !voiceType) {
+        toast({
+          title: "Please generate audio and image",
+        });
+        setIsSubmitting(false);
+        throw new Error("Please generate audio and image");
+      }
+      // -----------------------------------------------------------------------
+      // Create the podcast using the Convex mutation
+      const podcast = await createPodcast({
+        podcastTitle: data.podcastTitle,
+        podcastDescription: data.podcastDescription,
+        audioUrl,
+        imageUrl,
+        voiceType,
+        imagePrompt,
+        voicePrompt,
+        views: 0,
+        audioDuration,
+        audioStorageId: audioStorageId!,
+        imageStorageId: imageStorageId!,
+      });
+      // -----------------------------------------------------------------------
+      toast({ title: "Podcast created" });
+      setIsSubmitting(false);
+      // -----------------------------------------------------------------------
+      // Redirect to the home page
+      router.push("/");
+    } catch (error) {
+      // -----------------------------------------------------------------------
+      console.error(error);
+      toast({
+        title: "Error",
+        variant: "destructive",
+      });
+      // -----------------------------------------------------------------------
+      setIsSubmitting(false);
+      // -----------------------------------------------------------------------
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -162,54 +179,10 @@ const CreatePodcast = () => {
                     />
                   </FormControl>
                   {/* Message */}
-                  <FormMessage className="text-white-1" />
+                  <FormMessage className="text-orange-1" />
                 </FormItem>
               )}
             />
-            {/* ------------------------------------------------------------ */}
-            {/* Select Voice */}
-            {/* ------------------------------------------------------------ */}
-            {/* Form Field */}
-            <div className="flex flex-col gap-2.5">
-              {/* Label */}
-              <Label className="text-16 font-bold text-white-1">
-                Select AI Voice
-              </Label>
-              {/* Select Control */}
-              <Select onValueChange={(value) => setVoiceType(value)}>
-                <SelectTrigger
-                  className={cn(
-                    "text-16 w-full border-none bg-black-1 text-gray-1 focus-visible:ring-offset-orange-1"
-                  )}
-                >
-                  {/* Default Value */}
-                  <SelectValue
-                    placeholder="Select AI Voice"
-                    className="placeholder:text-gray-1 "
-                  />
-                </SelectTrigger>
-                {/* Select Options */}
-                <SelectContent className="text-16 border-none bg-black-1 font-bold text-white-1 focus:ring-offset-orange-1">
-                  {voiceCategories.map((category) => (
-                    <SelectItem
-                      key={category}
-                      value={category}
-                      className="capitalize focus:bg-orange-1"
-                    >
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-                {/* If voice type is selected, play audio demo */}
-                {voiceType && (
-                  <audio
-                    src={`/${voiceType}.mp3`}
-                    autoPlay
-                    className="hidden"
-                  />
-                )}
-              </Select>
-            </div>
             {/* ------------------------------------------------------------ */}
             {/* Podcast Description */}
             {/* ------------------------------------------------------------ */}
@@ -232,11 +205,51 @@ const CreatePodcast = () => {
                     />
                   </FormControl>
                   {/* Message */}
-                  <FormMessage className="text-white-1" />
+                  <FormMessage className="text-orange-1" />
                 </FormItem>
               )}
             />
             {/* ------------------------------------------------------------ */}
+          </div>
+          {/* -------------------------------------------------------------- */}
+          {/* Select Voice */}
+          {/* -------------------------------------------------------------- */}
+          {/* Form Field */}
+          <div className="flex flex-col gap-2.5 mt-5">
+            {/* Label */}
+            <Label className="text-16 font-bold text-white-1">
+              Select AI Voice
+            </Label>
+            {/* Select Control */}
+            <Select onValueChange={(value) => setVoiceType(value)}>
+              <SelectTrigger
+                className={cn(
+                  "text-16 w-full border-none bg-black-1 text-gray-1 focus-visible:ring-offset-orange-1"
+                )}
+              >
+                {/* Default Value */}
+                <SelectValue
+                  placeholder="Select AI Voice"
+                  className="placeholder:text-gray-1 "
+                />
+              </SelectTrigger>
+              {/* Select Options */}
+              <SelectContent className="text-16 border-none bg-black-1 font-bold text-white-1 focus:ring-offset-orange-1">
+                {voiceCategories.map((category) => (
+                  <SelectItem
+                    key={category}
+                    value={category}
+                    className="capitalize focus:bg-orange-1"
+                  >
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+              {/* If voice type is selected, play audio demo */}
+              {voiceType && (
+                <audio src={`/${voiceType}.mp3`} autoPlay className="hidden" />
+              )}
+            </Select>
           </div>
           {/* -------------------------------------------------------------- */}
           {/* AI Components Section */}
