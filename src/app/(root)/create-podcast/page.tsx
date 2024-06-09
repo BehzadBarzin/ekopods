@@ -38,7 +38,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 // -----------------------------------------------------------------------------
 
-const voiceCategories = ["scarlett", "will", "amy", "dan", "liv"];
+const voiceCategories = ["Scarlett", "Will", "Amy", "Dan", "Liv"];
 
 // -----------------------------------------------------------------------------
 // Zod validation schema
